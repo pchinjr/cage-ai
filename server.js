@@ -54,7 +54,7 @@ var apiCall = function(url, socketId) {
             return response.json();  
         })
         .then(function (j){
-            if (j.categories[0].detail.celebrities.length === 0) {
+            if (j.categories === undefined || j.categories[0].detail.celebrities.length === 0) {
                 emitName('NOPE', socketId)
             } else {
                 celebName = j.categories[0].detail.celebrities[0].name;
