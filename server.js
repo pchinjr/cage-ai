@@ -26,19 +26,19 @@ io.on('connect', function (socket) {
         });
         
         socket.on('imageSubmit', function(url) {
-            apiCall(url);
+            apiCall(url, socket.id);
         });
 
         socket.on('disconnect', function() {
           console.log('browser closed');
         });
 });
-
-function emitName(name) {
-    io.emit('cageVerified', name);
+function emitName(name, socketId) {
+    io.to(socketId).emit('cageVerified', name);
 }
 
-var apiCall = function(url) {
+
+var apiCall = function(url, socketId) {
         var celebName;
         fetch('https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Description&details=Celebrities&language=en', {  
             method: 'POST',  
@@ -54,8 +54,12 @@ var apiCall = function(url) {
             return response.json();  
         })
         .then(function (j){
-            celebName = j.categories[0].detail.celebrities[0].name;
-            emitName(celebName);
+            if (j.categories[0].detail.celebrities.length === 0) {
+                emitName('NOPE', socketId)
+            } else {
+                celebName = j.categories[0].detail.celebrities[0].name;
+                emitName(celebName, socketId);
+            };
         })
         .catch(function (error) {  
         console.log('Request failure: ', error);  

@@ -50,9 +50,11 @@
 				});
 			socket.on('cageVerified', function(res){
 				if (res === 'Nicolas Cage') {
-					alert("THAT IS OUR LORD, YOU HAVE DONE WELL")
+					alert("THAT IS OUR LORD, YOU HAVE DONE WELL");
+				} else if(res === 'NOPE') {
+					alert("NOT HOLY ENOUGH");
 				} else {
-					alert("YOU ARE NOT FAITHFUL!!")
+					alert("YOU ARE NOT FAITHFUL!!");
 				}
 			})
 			});		
