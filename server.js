@@ -1,5 +1,6 @@
 // server.js
 require('dotenv').config();
+var fs = require('fs');
 var express = require('express');
 var app = express();
 var server = require("http").createServer(app);
@@ -25,8 +26,13 @@ io.on('connect', function (socket) {
           console.log(data);
         });
         
-        socket.on('imageSubmit', function(url) {
-            apiCall(url, socket.id);
+        socket.on('sendFile', function(data, socketId) {
+            var incomingData = data.replace(/^data:image\/\w+;base64,/, "");
+            var buf = new Buffer(incomingData, 'base64');
+            fs.writeFileSync('public/image.png', buf);
+            console.log('done writing file');
+            //var location = 'http://45.55.86.193:3000/image.png';
+            imagePost(buf, socket.id);
         });
 
         socket.on('disconnect', function() {
@@ -36,6 +42,34 @@ io.on('connect', function (socket) {
 function emitName(name, socketId) {
     io.to(socketId).emit('cageVerified', name);
 }
+
+var imagePost = function(data, socketId) {
+        var celebName;
+        
+        fetch('https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Description&details=Celebrities&language=en', {  
+            method: 'POST',  
+            headers: {  
+                'Content-Type':'application/octet-stream',
+                'Ocp-Apim-Subscription-Key': process.env.MS_API  
+            },  
+            body: data
+        })
+        .then(function (response) {  
+            return response.json();  
+        })
+        .then(function (j){
+            if (j.categories === undefined || j.categories[0].detail.celebrities.length === 0) {
+                emitName('NOPE', socketId)
+                
+            } else {
+                celebName = j.categories[0].detail.celebrities[0].name;
+                emitName(celebName, socketId);
+            };
+        })
+        .catch(function (error) {  
+        console.log('Request failure: ', error);  
+        });
+};
 
 
 var apiCall = function(url, socketId) {
@@ -64,4 +98,4 @@ var apiCall = function(url, socketId) {
         .catch(function (error) {  
         console.log('Request failure: ', error);  
         });
-}
+};
