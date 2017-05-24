@@ -29,7 +29,7 @@ io.on('connect', function (socket) {
         socket.on('sendFile', function(data, socketId) {
             var incomingData = data.replace(/^data:image\/\w+;base64,/, "");
             var buf = new Buffer(incomingData, 'base64');
-            fs.writeFileSync('public/image.png', buf);
+            // fs.writeFileSync('public/image.png', buf);
             console.log('done writing file');
             //var location = 'http://45.55.86.193:3000/image.png';
             imagePost(buf, socket.id);
