@@ -32,7 +32,7 @@ io.on('connect', function (socket) {
             fs.writeFileSync('public/image.png', buf);
             console.log('done writing file');
             var location = 'http://45.55.86.193:3000/image.png';
-            imagePost(location, socketId);
+            apiCall(location, socket.id);
         });
 
         socket.on('disconnect', function() {
