@@ -31,8 +31,8 @@ io.on('connect', function (socket) {
             var buf = new Buffer(incomingData, 'base64');
             fs.writeFileSync('public/image.png', buf);
             console.log('done writing file');
-            var location = 'http://45.55.86.193:3000/image.png';
-            apiCall(location, socket.id);
+            //var location = 'http://45.55.86.193:3000/image.png';
+            imagePost(buf, socket.id);
         });
 
         socket.on('disconnect', function() {
@@ -43,18 +43,16 @@ function emitName(name, socketId) {
     io.to(socketId).emit('cageVerified', name);
 }
 
-var imagePost = function(url, socketId) {
+var imagePost = function(data, socketId) {
         var celebName;
         
         fetch('https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Description&details=Celebrities&language=en', {  
             method: 'POST',  
             headers: {  
-                'Content-Type':'application/json',
+                'Content-Type':'application/octet-stream',
                 'Ocp-Apim-Subscription-Key': process.env.MS_API  
             },  
-            body: JSON.stringify({
-                url: url,
-            })
+            body: data
         })
         .then(function (response) {  
             return response.json();  
