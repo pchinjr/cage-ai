@@ -54,7 +54,7 @@
 
 		socket.on('cageVerified', function(res){
 			if (res === 'Nicolas Cage') {
-				alert("THAT IS OUR LORD, YOU HAVE DONE WELL");
+				socket.emit('led:cage');
 			} else if(res === 'NOPE') {
 				alert("NOT HOLY ENOUGH");
 			} else {

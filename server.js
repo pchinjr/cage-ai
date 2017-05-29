@@ -31,9 +31,9 @@ io.on('connect', function (socket) {
             socket.join('server-room');
         });
 
-        socket.on('servo:set', function(data){
-            socket.to('server-room').emit('servo:set', data);
-            console.log('servo set to'+ data);
+        socket.on('led:cage', function(data){
+            socket.to('server-room').emit('led:cage');
+            console.log('that is cage!');
         });
         
         socket.on('sendFile', function(data, socketId) {
