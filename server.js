@@ -25,6 +25,16 @@ io.on('connect', function (socket) {
         socket.on('public-join', function(data) {
           console.log(data);
         });
+
+        socket.on('cage-pi-connect', function(data) {
+            console.log(data);
+            socket.join('server-room');
+        });
+
+        socket.on('servo:set', function(data){
+            socket.to('server-room').emit('servo:set', data);
+            console.log('servo set to'+ data);
+        });
         
         socket.on('sendFile', function(data, socketId) {
             var incomingData = data.replace(/^data:image\/\w+;base64,/, "");
