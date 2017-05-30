@@ -5,35 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 		<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 		<title>Welcome Worshiper!</title>
+    <style>
+      .jumbotron {
+        background-color: #f7df1e;
+      }
+    </style> 
 	<head>
 	<body>
-		<div class="container">
 		<div class="jumbotron" style="margin-top:10px">
-			<h1 class="text-center">Welcome Worshiper</h1>
-			<p class="lead text-center">Every day we must be the best we can be. Render your secrets unto Cage and he will deliver.</p>
-			<img class="img-responsive img-thumbnail center-block" src="http://cageme.herokuapp.com/random" style="max-height:300px"> </br>
+      <h1 class="text-center">Welcome Worshiper</h1>
+      <p class="lead text-center">Every day we must be the best we can be. Render your secrets unto Cage and he will deliver.</p>
+		</div>
 
-			<input type="file" accept="images/*" onchange="encodeImageFileAsURL(this)"/>
-			<output id="list"></output>	
-			<div class="btn btn-primary" id="photoUpload">Send to Server</div>
+		<div class="container">
+			<div class="row">
 
-			<p class="text-center"><strong>Our Father</strong>, which art in  Snake Eyes,</br> 
-					Nicolas be thy name;</br>  
-					thy  Face/Off come;</br>  
-					thy Con-Air be done,</br>  
-					in earth as it is in Deadfall.</br>  
-					Give us this day our daily Ghost Rider.</br>  
-					And forgive him for Trespass,</br>  
-					as we forgave him for Windtalkers.</br>  
-					And lead us not into Adaptation.;</br>  
-					but deliver us from The Rock.</br> 
-					</br> 	
-					For thine is the Wicker Man,</br>  
-					the National Treasure,</br>  
-					for ever and ever.</br>  
-					Amen.</br> 
-			</p>
-      </div>
+				<div class="col-md-4">
+					<label class="btn btn-default btn-danger btn-lg reveal">
+							CHOOSE! <input type="file" style="display: none;" onchange="encodeImageFileAsURL(this)">
+					</label></br></br>
+					<div class="btn btn-primary reveal" id="photoUpload">Send to Server</div> </br> </br>
+					<div class="reveal" style="display: none">
+					<p class="text-center"><a class="btn btn-lg btn-success" id="servoSet" role="button">May the Cage be with you</a></p>
+					</div>
+					<h1 id="result" style="background-color: yellow"></h1>
+				</div>
+
+				<div class="col-md-4">
+					<img class="img-responsive img-thumbnail center-block" src="http://cageme.herokuapp.com/random" style="max-height:300px"> </br>
+				</div>
+
+				<div class="col-md-4">
+					<p class="text-right"><strong>Our Father</strong>, which art in  Snake Eyes,</br> 
+							Nicolas be thy name;</br>  
+							thy  Face/Off come;</br>  
+							thy Con-Air be done,</br>  
+							in earth as it is in Deadfall.</br>  
+							Give us this day our daily Ghost Rider.</br>  
+							And forgive him for Trespass,</br>  
+							as we forgave him for Windtalkers.</br>  
+							And lead us not into Adaptation.;</br>  
+							but deliver us from The Rock.</br> 
+							</br> 	
+							For thine is the Wicker Man,</br>  
+							the National Treasure,</br>  
+							for ever and ever.</br>  
+							Amen.</br> 
+					</p>
+				</div>
+			
+			</div>
 	  </div>
 		
 
@@ -55,12 +76,26 @@
 		socket.on('cageVerified', function(res){
 			if (res === 'Nicolas Cage') {
 				socket.emit('led:cage');
+				$(".reveal").toggle();
 			} else if(res === 'NOPE') {
-				alert("NOT HOLY ENOUGH");
+				$("#result").text('NOT HOLY ENOUGH!');
 			} else {
-				alert("YOU ARE NOT FAITHFUL!!");
+				$("#result").text("YOU ARE NOT FAITHFUL!!");
 			}
 		});
+
+		var counter = 0;
+		$('#servoSet').on('click', function(){
+			console.log('begin blessings');
+			socket.emit('servo:set', counter);
+			if (counter < 180) {
+				counter=counter+18;
+			} else {
+				counter=0;
+				$("#result").text('Worship Complete for today');
+			};
+		});
+
 	});	
     
 	//https://stackoverflow.com/questions/6150289/how-to-convert-image-into-base64-string-using-javascript

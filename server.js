@@ -35,6 +35,11 @@ io.on('connect', function (socket) {
             socket.to('server-room').emit('led:cage');
             console.log('that is cage!');
         });
+
+        socket.on('servo:set', function(data){
+            socket.to('server-room').emit('servo:set', data);
+            console.log('servo set to'+ data);
+        });
         
         socket.on('sendFile', function(data, socketId) {
             var incomingData = data.replace(/^data:image\/\w+;base64,/, "");
