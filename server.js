@@ -47,6 +47,7 @@ io.on('connect', function (socket) {
             // fs.writeFileSync('public/image.png', buf);
             console.log('done writing file');
             //var location = 'http://45.55.86.193:3000/image.png';
+            
             imagePost(buf, socket.id);
         });
 
@@ -61,7 +62,7 @@ function emitName(name, socketId) {
 var imagePost = function(data, socketId) {
         var celebName;
         
-        fetch('https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Description&details=Celebrities&language=en', {  
+        fetch('https://eastus.api.cognitive.microsoft.com/vision/v1.0/models/celebrities/analyze', {  
             method: 'POST',  
             headers: {  
                 'Content-Type':'application/octet-stream',
@@ -73,40 +74,11 @@ var imagePost = function(data, socketId) {
             return response.json();  
         })
         .then(function (j){
-            if (j.categories === undefined || j.categories[0].detail.celebrities.length === 0) {
+            if (j.result.celebrities[0] === undefined || j.result.celebrities[0].name === undefined || j.result.celebrities[0].name === 0) {
                 emitName('NOPE', socketId)
                 
             } else {
-                celebName = j.categories[0].detail.celebrities[0].name;
-                emitName(celebName, socketId);
-            };
-        })
-        .catch(function (error) {  
-        console.log('Request failure: ', error);  
-        });
-};
-
-
-var apiCall = function(url, socketId) {
-        var celebName;
-        fetch('https://westus.api.cognitive.microsoft.com/vision/v1.0/analyze?visualFeatures=Description&details=Celebrities&language=en', {  
-            method: 'POST',  
-            headers: {  
-                'Content-Type':'application/json',
-                'Ocp-Apim-Subscription-Key': process.env.MS_API  
-            },  
-            body: JSON.stringify({
-                url: url,
-            })
-        })
-        .then(function (response) {  
-            return response.json();  
-        })
-        .then(function (j){
-            if (j.categories === undefined || j.categories[0].detail.celebrities.length === 0) {
-                emitName('NOPE', socketId)
-            } else {
-                celebName = j.categories[0].detail.celebrities[0].name;
+                celebName = j.result.celebrities[0].name;
                 emitName(celebName, socketId);
             };
         })
